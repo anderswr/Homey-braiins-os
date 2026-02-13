@@ -1,6 +1,6 @@
 {
   "id": "com.dmz.braiins-os",
-  "version": "0.0.1",
+  "version": "0.0.3",
   "compatibility": ">=12.0.0",
   "sdk": 3,
   "name": {
@@ -14,21 +14,30 @@
     "name": "DMZ"
   },
   "brandColor": "#FF6A00",
-    "images": {
+  "images": {
     "small": "/assets/logo_small.png",
     "large": "/assets/logo_large.png"
   },
-"drivers": [
-  {
-  "id": "antminer",
-  "name": { "en": "Antminer (Braiins OS+)" },
-  "class": "other",
-  "capabilities": ["onoff", "measure_power"],
-  "pair": [{ "id": "add_device" }],
-  "images": {
-    "small": "/assets/device_small.png",
-    "large": "/assets/device_large.png"
-  }
-}
-]
+  "drivers": [
+    {
+      "id": "antminer",
+      "name": {
+        "en": "Antminer (Braiins OS+)"
+      },
+      "class": "other",
+      "capabilities": [
+        "onoff",
+        "measure_power"
+      ],
+      "pair": [
+        {
+          "id": "add_device"
+        }
+      ],
+      "images": {
+        "small": "/assets/device_small.png",
+        "large": "/assets/device_large.png"
+      }
+    }
+  ]
 }
