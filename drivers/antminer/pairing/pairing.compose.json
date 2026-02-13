@@ -1,0 +1,8 @@
+{
+  "views": [
+    {
+      "id": "add_device",
+      "template": "add_device"
+    }
+  ]
+}

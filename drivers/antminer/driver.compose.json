@@ -1,0 +1,10 @@
+{
+  "name": {
+    "en": "Antminer (Braiins OS+)"
+  },
+  "class": "other",
+  "capabilities": [
+    "onoff",
+    "measure_power"
+  ]
+}

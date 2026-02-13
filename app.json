@@ -1,0 +1,29 @@
+{
+  "id": "com.dmz.braiins-os",
+  "version": "0.0.1",
+  "compatibility": ">=12.0.0",
+  "sdk": 3,
+  "name": {
+    "en": "Braiins OS+ Miner Controller"
+  },
+  "description": {
+    "en": "Control and monitor Braiins OS+ miners (pause/resume + basic stats) via the official REST API."
+  },
+  "category": "other",
+  "author": {
+    "name": "You"
+  },
+  "images": {
+    "small": "/assets/images/small.png",
+    "large": "/assets/images/large.png"
+  },
+  "permissions": [],
+  "drivers": [
+    {
+      "id": "antminer",
+      "name": {
+        "en": "Antminer (Braiins OS+)"
+      }
+    }
+  ]
+}
