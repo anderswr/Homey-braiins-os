@@ -7,23 +7,28 @@
     "en": "Braiins OS+ Miner Controller"
   },
   "description": {
-    "en": "Control and monitor Braiins OS+ miners (pause/resume + basic stats) via the official REST API."
+    "en": "Control and monitor Braiins OS+ miners via the official REST API."
   },
-  "category": "other",
+  "category": "tools",
   "author": {
-    "name": "You"
+    "name": "DMZ"
   },
+  "brandColor": "#FF6A00",
+    "images": {
+    "small": "/assets/logo_small.png",
+    "large": "/assets/logo_large.png"
+  },
+"drivers": [
+  {
+  "id": "antminer",
+  "name": { "en": "Antminer (Braiins OS+)" },
+  "class": "other",
+  "capabilities": ["onoff", "measure_power"],
+  "pair": [{ "id": "add_device" }],
   "images": {
-    "small": "/assets/images/small.png",
-    "large": "/assets/images/large.png"
-  },
-  "permissions": [],
-  "drivers": [
-    {
-      "id": "antminer",
-      "name": {
-        "en": "Antminer (Braiins OS+)"
-      }
-    }
-  ]
+    "small": "/assets/device_small.png",
+    "large": "/assets/device_large.png"
+  }
+}
+]
 }

@@ -1,0 +1,128 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Add Miner</title>
+  <style>
+    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; padding: 16px; }
+    label { font-weight: 600; }
+    input { width: 100%; padding: 10px; box-sizing: border-box; }
+    button { padding: 10px 14px; }
+    .row { margin-bottom: 12px; }
+    .hint { opacity: 0.8; font-size: 12px; }
+  </style>
+</head>
+<body>
+  <h1>Add Antminer (Braiins OS+)</h1>
+  <p>Enter miner connection details (LAN). The connection test runs from Homey.</p>
+
+  <form id="f">
+    <div class="row">
+      <label>Host / IP</label><br />
+      <input id="host" placeholder="192.168.1.50" required />
+    </div>
+
+    <div class="row">
+      <label>Use HTTPS</label><br />
+      <input id="https" type="checkbox" checked />
+      <div class="hint">Default is HTTPS (port 443). Disable for HTTP (port 80).</div>
+    </div>
+
+    <div class="row">
+      <label>Port</label><br />
+      <input id="port" type="number" value="443" required />
+    </div>
+
+    <div class="row">
+      <label>Username</label><br />
+      <input id="username" placeholder="root" required />
+    </div>
+
+    <div class="row">
+      <label>Password</label><br />
+      <input id="password" type="password" required />
+    </div>
+
+    <button id="btn" type="submit">Test & Add</button>
+  </form>
+
+  <script>
+    const httpsEl = document.getElementById('https');
+    const portEl = document.getElementById('port');
+    const btnEl = document.getElementById('btn');
+
+    httpsEl.addEventListener('change', () => {
+      // Auto-suggest port based on protocol
+      portEl.value = httpsEl.checked ? '443' : '80';
+    });
+
+    function pickStableId(details, host, port, https) {
+      // Try common identifiers; structure can vary by BOS version
+      const candidates = [
+        details?.miner?.serial,
+        details?.serial,
+        details?.miner?.id,
+        details?.id,
+        details?.miner?.mac,
+        details?.mac
+      ].filter(Boolean);
+
+      if (candidates.length > 0) return String(candidates[0]);
+
+      // fallback
+      return `${https ? 'https' : 'http'}://${host}:${port}`;
+    }
+
+    function pickNiceName(details, host) {
+      const candidates = [
+        details?.miner?.model,
+        details?.model,
+        details?.miner?.hostname,
+        details?.hostname
+      ].filter(Boolean);
+
+      if (candidates.length > 0) return `${candidates[0]} (${host})`;
+      return `Miner ${host}`;
+    }
+
+    document.getElementById('f').addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      btnEl.disabled = true;
+      btnEl.textContent = 'Testing...';
+
+      const host = document.getElementById('host').value.trim();
+      const port = parseInt(document.getElementById('port').value, 10);
+      const https = document.getElementById('https').checked;
+      const username = document.getElementById('username').value.trim();
+      const password = document.getElementById('password').value;
+
+      try {
+        const result = await Homey.emit('test_connection', { host, port, https, username, password });
+
+        if (!result || !result.ok) {
+          throw new Error(result?.error || 'Unknown error while testing connection.');
+        }
+
+        const details = result.details || null;
+
+        const deviceId = pickStableId(details, host, port, https);
+        const deviceName = pickNiceName(details, host);
+
+        await Homey.createDevice({
+          name: deviceName,
+          data: { id: deviceId },
+          settings: { host, port, https, username, password }
+        });
+
+        await Homey.done();
+      } catch (err) {
+        await Homey.alert(String(err?.message || err));
+      } finally {
+        btnEl.disabled = false;
+        btnEl.textContent = 'Test & Add';
+      }
+    });
+  </script>
+</body>
+</html>

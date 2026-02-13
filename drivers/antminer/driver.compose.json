@@ -1,10 +1,8 @@
 {
-  "name": {
-    "en": "Antminer (Braiins OS+)"
-  },
+  "name": { "en": "Antminer (Braiins OS+)" },
   "class": "other",
-  "capabilities": [
-    "onoff",
-    "measure_power"
+  "capabilities": ["onoff", "measure_power"],
+  "pair": [
+    { "id": "add_device" }
   ]
 }

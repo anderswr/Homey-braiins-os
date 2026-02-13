@@ -1,0 +1,38 @@
+[
+  {
+    "id": "host",
+    "type": "text",
+    "label": { "en": "Host / IP" },
+    "hint": { "en": "Example: 192.168.1.50" },
+    "value": ""
+  },
+  {
+    "id": "https",
+    "type": "checkbox",
+    "label": { "en": "Use HTTPS" },
+    "value": true
+  },
+  {
+    "id": "port",
+    "type": "number",
+    "label": { "en": "Port" },
+    "hint": { "en": "Typically 443 for HTTPS, 80 for HTTP" },
+    "value": 443,
+    "attr": {
+      "min": 1,
+      "max": 65535
+    }
+  },
+  {
+    "id": "username",
+    "type": "text",
+    "label": { "en": "Username" },
+    "value": "root"
+  },
+  {
+    "id": "password",
+    "type": "password",
+    "label": { "en": "Password" },
+    "value": ""
+  }
+]

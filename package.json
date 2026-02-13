@@ -7,7 +7,11 @@
     "test": "echo \"no tests\""
   },
   "dependencies": {
-    "homey": "^3.0.0",
+    "homey": "^3.12.2",
     "node-fetch": "^3.3.2"
+  },
+  "devDependencies": {
+    "@img/sharp-darwin-arm64": "^0.34.5",
+    "@img/sharp-libvips-darwin-arm64": "^1.2.4"
   }
 }

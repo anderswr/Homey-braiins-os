@@ -29,37 +29,59 @@ class AntminerDevice extends Homey.Device {
     });
 
     this._pollIntervalMs = 30 * 1000;
+    this._startPolling();
+
+    await this._poll().catch((err) => this.error(err));
+  }
+
+  _startPolling() {
+    if (this._pollTimer) this.homey.clearInterval(this._pollTimer);
     this._pollTimer = this.homey.setInterval(() => {
       this._poll().catch((err) => this.error(err));
     }, this._pollIntervalMs);
-
-    await this._poll().catch((err) => this.error(err));
   }
 
   onDeleted() {
     if (this._pollTimer) this.homey.clearInterval(this._pollTimer);
   }
 
+  /**
+   * Called when user changes device settings in Homey UI
+   */
+  async onSettings({ newSettings }) {
+    // Basic validation
+    if (!newSettings.host || !newSettings.username || !newSettings.password) {
+      throw new Error('Host, username and password are required.');
+    }
+    if (!newSettings.port || Number(newSettings.port) < 1 || Number(newSettings.port) > 65535) {
+      throw new Error('Port must be a number between 1 and 65535.');
+    }
+
+    // Apply immediately: run a poll right away
+    this.log('Settings updated, reconnecting now...');
+    this.setUnavailable('Reconnecting with new settings...').catch(() => {});
+
+    // Next poll uses this.getSettings() (Homey updates it automatically)
+    await this._poll().catch(() => {});
+  }
+
   _makeClient() {
     const s = this.getSettings();
     return new BosRestClient({
       host: s.host,
-      port: s.port,
-      https: s.https,
+      port: Number(s.port),
+      https: Boolean(s.https),
       username: s.username,
-      password: s.password
+      password: s.password,
     });
   }
 
   _pickPowerWatts(stats) {
-    // OpenAPI only shows the shape as objects at a high level  [oai_citation:21‡developer.braiins-os.com](https://developer.braiins-os.com/latest/openapi.html)
-    // Different BOS versions may put the watt number in slightly different places.
-    // We try a few common candidates:
     const candidates = [
       stats?.power_stats?.approximated_consumption?.watt,
       stats?.power_stats?.approximatedConsumption?.watt,
       stats?.power_stats?.consumption?.watt,
-      stats?.power_stats?.power?.watt
+      stats?.power_stats?.power?.watt,
     ];
 
     for (const v of candidates) {
@@ -79,8 +101,8 @@ class AntminerDevice extends Homey.Device {
 
     try {
       const [stats, cooling] = await Promise.all([
-        client.getMinerStats(),     // GET /api/v1/miner/stats  [oai_citation:22‡developer.braiins-os.com](https://developer.braiins-os.com/latest/openapi.html)
-        client.getCoolingState()    // GET /api/v1/cooling/state  [oai_citation:23‡developer.braiins-os.com](https://developer.braiins-os.com/latest/openapi.html)
+        client.getMinerStats(),
+        client.getCoolingState(),
       ]);
 
       if (!this._hasLoggedSample) {
@@ -94,12 +116,10 @@ class AntminerDevice extends Homey.Device {
         await this.setCapabilityValue('measure_power', watts).catch(() => {});
       }
 
-      // Later: add custom capabilities for hashrate + fans.
-      // Cooling state response explicitly includes fans[] with rpm  [oai_citation:24‡developer.braiins-os.com](https://developer.braiins-os.com/latest/openapi.html)
-
       await this.setAvailable();
     } catch (err) {
-      await this.setUnavailable(`Connection error: ${err.message || err}`);
+      const msg = err?.message || String(err);
+      await this.setUnavailable(`Connection error: ${msg}`);
       throw err;
     }
   }
