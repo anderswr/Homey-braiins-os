@@ -1,0 +1,13 @@
+{
+  "name": "com.dmz.braiins-os",
+  "version": "0.0.1",
+  "main": "app.js",
+  "private": true,
+  "scripts": {
+    "test": "echo \"no tests\""
+  },
+  "dependencies": {
+    "homey": "^3.0.0",
+    "node-fetch": "^3.3.2"
+  }
+}
